@@ -5,10 +5,10 @@ export type AttendanceDocument = HydratedDocument<Attendance>;
 
 @Schema({ collection: 'attendance', timestamps: true })
 export class Attendance {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   employeeId: string;
 
-  @Prop({ required: true })
+  @Prop()
   clockInTime: string;
 
   @Prop()
@@ -20,8 +20,8 @@ export class Attendance {
   @Prop()
   clockOutComment: string;
 
-  @Prop()
-  date: Date;
+  @Prop({ unique: true })
+  date: string;
 }
 
 export const AttendanceSchema = SchemaFactory.createForClass(Attendance);

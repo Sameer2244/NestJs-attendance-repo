@@ -10,14 +10,6 @@ export class UsersService {
     @InjectModel(Users.name)
     private readonly userModel: Model<Users>,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    const newUser = new this.userModel(createUserDto);
-    return newUser.save();
-  }
-
-  findAll(): Promise<Users[]> {
-    return this.userModel.find().exec();
-  }
 
   findOne(id: string): Promise<Users | null> {
     return this.userModel.findOne({ _id: id }).exec();

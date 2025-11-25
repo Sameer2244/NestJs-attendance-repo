@@ -1,9 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+import bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import { Users } from 'src/users/users.schema';
-import bcrypt from 'bcryptjs';
 @Injectable()
 export class AuthService {
   constructor(
@@ -15,23 +20,31 @@ export class AuthService {
   async signIn(email: string, pass: string): Promise<any> {
     const user = await this.userModel.findOne({ email: email });
     const decryptedpassword = await bcrypt.compare(pass, user?.password ?? '');
-    if (!decryptedpassword) {
+    if (!decryptedpassword || !user) {
       throw new UnauthorizedException();
     }
     const payload = { email: user?.email };
     return {
       access_token: await this.jwtService.signAsync(payload),
+      refresh_token: await this.jwtService.signAsync(payload, {
+        expiresIn: '7d',
+      }),
     };
   }
 
   async signUp(email: string, pass: string): Promise<any> {
     const hashedPassword = await bcrypt.hash(pass, 10);
-    const user = await this.userModel.create({
-      email,
-      password: hashedPassword,
-    });
-    if (!user) {
-      throw new UnauthorizedException();
+    try {
+      const user = await this.userModel.findOne({ email: email }).exec();
+      if (user) {
+        throw new ConflictException('user already exist');
+      }
+      await this.userModel.create({
+        email: email,
+        password: hashedPassword,
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
     return {
       message: 'User created successfully',

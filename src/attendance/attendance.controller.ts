@@ -1,19 +1,49 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { AttendanceService } from './attendance.service';
-import { CreateAttendanceDTO } from './dto/attendance.dto';
+import { SignInDTO } from './dto/signin.dto';
+import { SignOutDTO } from './dto/signout.dto';
+import { ApiBody } from '@nestjs/swagger';
 
+//modify the attendance based on utility
 @Controller('attendance')
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
-  @Get()
-  findAll(): object {
-    return this.attendanceService.getAllAttedanceRecord();
+  @UseGuards(AuthGuard)
+  @Post('clock-in')
+  @ApiBody({
+    schema: {
+      example: {
+        employeeId: '6923dde0366752d27d4916d1',
+        clockInTime: '10am',
+        clockInComment: 'sign in',
+        date: '24-11-2025',
+      },
+    },
+  })
+  clockIn(@Body() attendanceDto: SignInDTO) {
+    return this.attendanceService.clockIn(attendanceDto);
   }
 
-  @Post()
-  create(@Body() attendance: CreateAttendanceDTO) {
-    // userData contains the JSON sent from the frontend
-    this.attendanceService.create(attendance);
-    return `Creating a user with name: ${attendance.name}`;
+  @UseGuards(AuthGuard)
+  @Post('clock-out')
+  @ApiBody({
+    schema: {
+      example: {
+        employeeId: '6923dde0366752d27d4916d1',
+        clockOutTime: '10pm',
+        clockOutComment: 'sign out',
+        date: '24-11-2025',
+      },
+    },
+  })
+  clockOut(@Body() attendanceDto: SignOutDTO) {
+    return this.attendanceService.clockOut(attendanceDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get()
+  getAttendanceData(@Query('date') date: string) {
+    return this.attendanceService.getAttendanceData(date);
   }
 }

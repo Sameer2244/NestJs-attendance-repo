@@ -5,20 +5,23 @@ export type TasksDocument = HydratedDocument<Tasks>;
 
 @Schema({ collection: 'tasks', timestamps: true })
 export class Tasks {
-  @Prop({ required: true, unique: true })
+  @Prop()
   employeeId: string;
 
   @Prop()
   description: string;
 
-  @Prop({ required: true })
+  @Prop()
   startTime: string;
 
-  @Prop({ required: true })
+  @Prop()
   endTime: string;
 
   @Prop()
-  date: Date;
+  date: string;
+
+  @Prop()
+  taskDescription: string;
 }
 
 export const TasksSchema = SchemaFactory.createForClass(Tasks);

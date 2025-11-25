@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateAttendanceDTO {
+export class SignInDTO {
   @IsString()
   @IsNotEmpty()
   employeeId: string;
@@ -12,14 +12,6 @@ export class CreateAttendanceDTO {
   @IsString()
   @IsOptional()
   clockInComment: string;
-
-  @IsString()
-  @IsOptional()
-  clockOutTime: string;
-
-  @IsString()
-  @IsOptional()
-  clockOutComment: string;
 
   @IsString()
   @IsNotEmpty()
