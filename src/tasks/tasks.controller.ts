@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { TasksService } from './tasks.service';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { CreateTaskDTO } from './dto/createtask.dto';
 import { Tasks } from './task.schema';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { TasksService } from './tasks.service';
 
 @Controller('tasks')
 export class TasksController {
@@ -13,7 +12,7 @@ export class TasksController {
     return this.taskService.createTask(taskDto);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get()
   getTasks(@Query('date') date: string): Promise<Tasks[]> {
     return this.taskService.getTasks(date);
